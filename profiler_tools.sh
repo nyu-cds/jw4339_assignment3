@@ -5,15 +5,19 @@
 # echo 'arg2='$2
 case "$1" in
     ""|-h|--help) 
-        echo "Usage: ./profiler_tools.sh [<-h> | <-d|-t> <the_scprit.py>]"
+        echo "Usage: ./profiler_tools.sh -h|<-d|-t> <the_scprit.py>"
         echo "       -h     print this help message"
         echo "       -d <py_script>   run diff"
         echo "       -t <py_script>   run timer"
+        echo "       -p <py_script>   run python cProfiler"
         ;;
 	-d) echo "execute \$diff original_out <(python $2)"
         diff original_out <(python $2)
         ;;
 	-t) echo "execute \$sh -c 'python $2 > /dev/null'" 
-        time sh -c 'python $2 > /dev/null'
+        time sh -c "python $2 > /dev/null"
+        ;;
+    -p) echo "execute \$python -m cProfile $2" 
+        python -m cProfile $2
         ;;
 esac
