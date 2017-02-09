@@ -68,9 +68,10 @@ def advance(dt):
     '''
         advance the system one timestep
     '''
+    body_keys = BODIES.keys()
     seenit = []
-    for body1 in BODIES.keys():
-        for body2 in BODIES.keys():
+    for body1 in body_keys:
+        for body2 in body_keys:
             if (body1 != body2) and not (body2 in seenit):
                 ([x1, y1, z1], v1, m1) = BODIES[body1]
                 ([x2, y2, z2], v2, m2) = BODIES[body2]
@@ -86,32 +87,34 @@ def advance(dt):
                 # mark as seen
                 seenit.append(body1)
         
-    for body in BODIES.keys():
+    for body in body_keys:
         (r, [vx, vy, vz], m) = BODIES[body]
         # update r's
         r[0] += dt * vx
         r[1] += dt * vy
         r[2] += dt * vz
 
-def compute_energy(m1, m2, dx, dy, dz):
-    return (m1 * m2) / ((dx * dx + dy * dy + dz * dz) ** 0.5)
+# def compute_energy(m1, m2, dx, dy, dz):
+    # return (m1 * m2) / ((dx * dx + dy * dy + dz * dz) ** 0.5)
     
 def report_energy(e=0.0):
     '''
         compute the energy and return it so that it can be printed
     '''
+    body_keys = BODIES.keys()
     seenit = []
-    for body1 in BODIES.keys():
-        for body2 in BODIES.keys():
+    for body1 in body_keys:
+        for body2 in body_keys:
             if (body1 != body2) and not (body2 in seenit):
                 ((x1, y1, z1), v1, m1) = BODIES[body1]
                 ((x2, y2, z2), v2, m2) = BODIES[body2]
                 # comput deltas
                 (dx, dy, dz) = (x1-x2, y1-y2, z1-z2)
-                e -= compute_energy(m1, m2, dx, dy, dz)
+                # comput energy
+                e -= (m1 * m2) / ((dx * dx + dy * dy + dz * dz) ** 0.5)
                 seenit.append(body1)
         
-    for body in BODIES.keys():
+    for body in body_keys:
         (r, [vx, vy, vz], m) = BODIES[body]
         e += m * (vx * vx + vy * vy + vz * vz) / 2.
         
