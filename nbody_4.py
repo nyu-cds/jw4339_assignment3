@@ -70,19 +70,16 @@ def advance(dt):
     '''
         advance the system one timestep
     '''
-    seenit = []
-    for (body1, body2) in list(itertools.product(BODIES.keys(), BODIES.keys())):
-        if (body1 != body2) and not (body2 in seenit):
-            ([x1, y1, z1], v1, m1) = BODIES[body1]
-            ([x2, y2, z2], v2, m2) = BODIES[body2]
-            (dx, dy, dz) = compute_deltas(x1, x2, y1, y2, z1, z2)
-            update_vs(v1, v2, dt, dx, dy, dz, m1, m2)
-            seenit.append(body1)
+    all_combinations = itertools.combinations(BODIES.keys(), 2)
+    for (body1, body2) in all_combinations:
+        ([x1, y1, z1], v1, m1) = BODIES[body1]
+        ([x2, y2, z2], v2, m2) = BODIES[body2]
+        (dx, dy, dz) = compute_deltas(x1, x2, y1, y2, z1, z2)
+        update_vs(v1, v2, dt, dx, dy, dz, m1, m2)
         
     for body in BODIES.keys():
         (r, [vx, vy, vz], m) = BODIES[body]
         update_rs(r, dt, vx, vy, vz)
-        
     
 
 def compute_energy(m1, m2, dx, dy, dz):
@@ -92,14 +89,12 @@ def report_energy(e=0.0):
     '''
         compute the energy and return it so that it can be printed
     '''
-    seenit = []
-    for (body1, body2) in list(itertools.product(BODIES.keys(), BODIES.keys())):
-        if (body1 != body2) and not (body2 in seenit):
-            ((x1, y1, z1), v1, m1) = BODIES[body1]
-            ((x2, y2, z2), v2, m2) = BODIES[body2]
-            (dx, dy, dz) = compute_deltas(x1, x2, y1, y2, z1, z2)
-            e -= compute_energy(m1, m2, dx, dy, dz)
-            seenit.append(body1)
+    all_combinations = itertools.combinations(BODIES.keys(), 2)
+    for (body1, body2) in all_combinations:
+        ((x1, y1, z1), v1, m1) = BODIES[body1]
+        ((x2, y2, z2), v2, m2) = BODIES[body2]
+        (dx, dy, dz) = compute_deltas(x1, x2, y1, y2, z1, z2)
+        e -= compute_energy(m1, m2, dx, dy, dz)
         
     for body in BODIES.keys():
         (r, [vx, vy, vz], m) = BODIES[body]
