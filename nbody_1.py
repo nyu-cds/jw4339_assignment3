@@ -1,5 +1,11 @@
 """
     N-body simulation.
+    
+    Module: nbody_1, minimizing function call
+    Author: jw4339@nyu.edu
+    
+    Timing(shell time command): Avg(75.881, 76.934, 75.739) = 76.185
+    Improvement Ranking: 1st improvement
 """
 
 PI = 3.14159265358979323

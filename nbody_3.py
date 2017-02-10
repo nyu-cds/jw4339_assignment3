@@ -1,5 +1,11 @@
 """
     N-body simulation.
+    
+    Module: nbody_3 using local variables
+    Author: jw4339@nyu.edu
+    
+    Timing(shell time command): Avg(125.444, 125.975, 126.262) = 125.894s
+    Improvement Ranking: 3rd improvement
 """
 
 PI = 3.14159265358979323
@@ -68,19 +74,21 @@ def advance(dt):
     '''
         advance the system one timestep
     '''
-    local_bodies = BODIES
+    local_bodies_dict = BODIES
+    body_keys = local_bodies_dict.keys()
+    
     seenit = []
-    for body1 in local_bodies.keys():
-        for body2 in local_bodies.keys():
+    for body1 in body_keys:
+        for body2 in local_bodies_dict.keys():
             if (body1 != body2) and not (body2 in seenit):
-                ([x1, y1, z1], v1, m1) = local_bodies[body1]
-                ([x2, y2, z2], v2, m2) = local_bodies[body2]
+                ([x1, y1, z1], v1, m1) = local_bodies_dict[body1]
+                ([x2, y2, z2], v2, m2) = local_bodies_dict[body2]
                 (dx, dy, dz) = compute_deltas(x1, x2, y1, y2, z1, z2)
                 update_vs(v1, v2, dt, dx, dy, dz, m1, m2)
                 seenit.append(body1)
         
-    for body in local_bodies.keys():
-        (r, [vx, vy, vz], m) = local_bodies[body]
+    for body in body_keys:
+        (r, [vx, vy, vz], m) = local_bodies_dict[body]
         update_rs(r, dt, vx, vy, vz)
 
 def compute_energy(m1, m2, dx, dy, dz):
@@ -90,19 +98,21 @@ def report_energy(e=0.0):
     '''
         compute the energy and return it so that it can be printed
     '''
-    local_bodies = BODIES
+    local_bodies_dict = BODIES
+    body_keys = local_bodies_dict.keys()
+    
     seenit = []
-    for body1 in local_bodies.keys():
-        for body2 in local_bodies.keys():
+    for body1 in body_keys:
+        for body2 in body_keys:
             if (body1 != body2) and not (body2 in seenit):
-                ((x1, y1, z1), v1, m1) = local_bodies[body1]
-                ((x2, y2, z2), v2, m2) = local_bodies[body2]
+                ((x1, y1, z1), v1, m1) = local_bodies_dict[body1]
+                ((x2, y2, z2), v2, m2) = local_bodies_dict[body2]
                 (dx, dy, dz) = compute_deltas(x1, x2, y1, y2, z1, z2)
                 e -= compute_energy(m1, m2, dx, dy, dz)
                 seenit.append(body1)
         
-    for body in local_bodies.keys():
-        (r, [vx, vy, vz], m) = local_bodies[body]
+    for body in body_keys:
+        (r, [vx, vy, vz], m) = local_bodies_dict[body]
         e += m * (vx * vx + vy * vy + vz * vz) / 2.
         
     return e
@@ -112,9 +122,11 @@ def offset_momentum(ref, px=0.0, py=0.0, pz=0.0):
         ref is the body in the center of the system
         offset values from this reference
     '''
-    local_bodies = BODIES
-    for body in local_bodies.keys():
-        (r, [vx, vy, vz], m) = local_bodies[body]
+    local_bodies_dict = BODIES
+    body_keys = local_bodies_dict.keys()
+    
+    for body in body_keys:
+        (r, [vx, vy, vz], m) = local_bodies_dict[body]
         px -= vx * m
         py -= vy * m
         pz -= vz * m

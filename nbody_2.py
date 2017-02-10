@@ -1,5 +1,11 @@
 """
     N-body simulation.
+    
+    Module: nbody_2, using efficient data structure
+    Author: jw4339@nyu.edu
+    
+    Timing(shell time command): Avg(134.457, 124.867, 126.553) = 128.626s
+    Improvement Ranking: 4th improvement
 """
 
 PI = 3.14159265358979323

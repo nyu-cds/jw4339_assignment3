@@ -1,5 +1,11 @@
 """
     N-body simulation.
+    
+    Module: nbody_4, using data aggregation for loop optimization
+    Author: jw4339@nyu.edu
+    
+    Timing(shell time command): Avg(126.101, 121.515, 120.527) = 122.714s
+    Improvement Ranking: 2nd improment
 """
 
 import itertools
@@ -66,11 +72,11 @@ def update_rs(r, dt, vx, vy, vz):
     r[1] += dt * vy
     r[2] += dt * vz
 
-def advance(dt):
+def advance(dt, all_combinations):
     '''
         advance the system one timestep
     '''
-    all_combinations = itertools.combinations(BODIES.keys(), 2)
+    # all_combinations = itertools.combinations(BODIES.keys(), 2)
     for (body1, body2) in all_combinations:
         ([x1, y1, z1], v1, m1) = BODIES[body1]
         ([x2, y2, z2], v2, m2) = BODIES[body2]
@@ -85,11 +91,11 @@ def advance(dt):
 def compute_energy(m1, m2, dx, dy, dz):
     return (m1 * m2) / ((dx * dx + dy * dy + dz * dz) ** 0.5)
     
-def report_energy(e=0.0):
+def report_energy(all_combinations, e=0.0):
     '''
         compute the energy and return it so that it can be printed
     '''
-    all_combinations = itertools.combinations(BODIES.keys(), 2)
+    # all_combinations = itertools.combinations(BODIES.keys(), 2)
     for (body1, body2) in all_combinations:
         ((x1, y1, z1), v1, m1) = BODIES[body1]
         ((x2, y2, z2), v2, m2) = BODIES[body2]
@@ -128,12 +134,15 @@ def nbody(loops, reference, iterations):
     '''
     # Set up global state
     offset_momentum(BODIES[reference])
-
+    
+    # get all combination of body keys
+    all_combinations = list(itertools.combinations(BODIES.keys(), 2))
+    
     for _ in range(loops):
-        report_energy()
+        report_energy(all_combinations)
         for _ in range(iterations):
-            advance(0.01)
-        print(report_energy())
+            advance(0.01, all_combinations = all_combinations)
+        print(report_energy(all_combinations))
 
 if __name__ == '__main__':
     nbody(100, 'sun', 20000)

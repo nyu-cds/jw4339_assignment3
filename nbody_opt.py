@@ -3,7 +3,9 @@
     
     Module: nbody_opt.py
     Author: jw4339@nyu.edu
-    Speedup: R = 
+    
+    Timing(shell time command): Avg(34.779, 33.778, 34.091) = 34.216s
+    Speedup: R = Avg(125.419, 127.581, 127.670) / 34.216 = 3.708
 """
 import itertools
 
@@ -59,12 +61,13 @@ def advance(dt, iterations, all_combinations):
             # comput deltas
             (dx, dy, dz) = (x1-x2, y1-y2, z1-z2)
             # update v's
-            v1[0] -= dx * m2 * dt * ((dx * dx + dy * dy + dz * dz) ** (-1.5))
-            v1[1] -= dy * m2 * dt * ((dx * dx + dy * dy + dz * dz) ** (-1.5))
-            v1[2] -= dz * m2 * dt * ((dx * dx + dy * dy + dz * dz) ** (-1.5))
-            v2[0] += dx * m1 * dt * ((dx * dx + dy * dy + dz * dz) ** (-1.5))
-            v2[1] += dy * m1 * dt * ((dx * dx + dy * dy + dz * dz) ** (-1.5))
-            v2[2] += dz * m1 * dt * ((dx * dx + dy * dy + dz * dz) ** (-1.5))
+            factor = dt * ((dx * dx + dy * dy + dz * dz) ** (-1.5))
+            v1[0] -= dx * m2 * factor
+            v1[1] -= dy * m2 * factor
+            v1[2] -= dz * m2 * factor
+            v2[0] += dx * m1 * factor
+            v2[1] += dy * m1 * factor
+            v2[2] += dz * m1 * factor
             
         for body in body_keys:
             (r, [vx, vy, vz], m) = local_bodies_dict[body]
