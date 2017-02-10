@@ -46,15 +46,13 @@ BODIES = {
                  -9.51592254519715870e-05 * DAYS_PER_YEAR],
                 5.15138902046611451e-05 * SOLAR_MASS)}
 
-def advance(dt, iterations):
+def advance(dt, iterations, all_combinations):
     '''
         advance the system iterations timesteps, dt timestep each
     '''
     local_bodies_dict = BODIES
     body_keys = local_bodies_dict.keys()
-    all_combinations = list(itertools.combinations(body_keys, 2))
     for _ in range(iterations):
-        # all_combinations = itertools.combinations(body_keys, 2)
         for (body1, body2) in all_combinations:
             ([x1, y1, z1], v1, m1) = local_bodies_dict[body1]
             ([x2, y2, z2], v2, m2) = local_bodies_dict[body2]
@@ -76,14 +74,13 @@ def advance(dt, iterations):
             r[2] += dt * vz
 
             
-def report_energy(e=0.0):
+def report_energy(all_combinations, e=0.0):
     '''
         compute the energy and return it so that it can be printed
     '''
     local_bodies_dict = BODIES
     body_keys = local_bodies_dict.keys()
-    
-    all_combinations = itertools.combinations(BODIES.keys(), 2)
+
     for (body1, body2) in all_combinations:
         ((x1, y1, z1), v1, m1) = local_bodies_dict[body1]
         ((x2, y2, z2), v2, m2) = local_bodies_dict[body2]
@@ -128,10 +125,13 @@ def nbody(loops, reference, iterations):
     # Set up global state
     offset_momentum(BODIES[reference])
 
+    # get all combination of body keys
+    all_combinations = list(itertools.combinations(BODIES.keys(), 2))
+    
     for _ in range(loops):
-        report_energy()
-        advance(0.01, iterations)
-        print(report_energy())
+        report_energy(all_combinations)
+        advance(0.01, iterations, all_combinations)
+        print(report_energy(all_combinations))
 
 if __name__ == '__main__':
     nbody(100, 'sun', 20000)
