@@ -64,35 +64,36 @@ BODIES = {
     # r[1] += dt * vy
     # r[2] += dt * vz
 
-def advance(dt):
+def advance(dt, iterations):
     '''
-        advance the system one timestep
+        advance the system iterations timesteps
     '''
     body_keys = BODIES.keys()
-    seenit = []
-    for body1 in body_keys:
-        for body2 in body_keys:
-            if (body1 != body2) and not (body2 in seenit):
-                ([x1, y1, z1], v1, m1) = BODIES[body1]
-                ([x2, y2, z2], v2, m2) = BODIES[body2]
-                # comput deltas
-                (dx, dy, dz) = (x1-x2, y1-y2, z1-z2)
-                # update v's
-                v1[0] -= dx * m2 * dt * ((dx * dx + dy * dy + dz * dz) ** (-1.5))
-                v1[1] -= dy * m2 * dt * ((dx * dx + dy * dy + dz * dz) ** (-1.5))
-                v1[2] -= dz * m2 * dt * ((dx * dx + dy * dy + dz * dz) ** (-1.5))
-                v2[0] += dx * m1 * dt * ((dx * dx + dy * dy + dz * dz) ** (-1.5))
-                v2[1] += dy * m1 * dt * ((dx * dx + dy * dy + dz * dz) ** (-1.5))
-                v2[2] += dz * m1 * dt * ((dx * dx + dy * dy + dz * dz) ** (-1.5))
-                # mark as seen
-                seenit.append(body1)
-        
-    for body in body_keys:
-        (r, [vx, vy, vz], m) = BODIES[body]
-        # update r's
-        r[0] += dt * vx
-        r[1] += dt * vy
-        r[2] += dt * vz
+    for _ in range(iterations):
+        seenit = []
+        for body1 in body_keys:
+            for body2 in body_keys:
+                if (body1 != body2) and not (body2 in seenit):
+                    ([x1, y1, z1], v1, m1) = BODIES[body1]
+                    ([x2, y2, z2], v2, m2) = BODIES[body2]
+                    # comput deltas
+                    (dx, dy, dz) = (x1-x2, y1-y2, z1-z2)
+                    # update v's
+                    v1[0] -= dx * m2 * dt * ((dx * dx + dy * dy + dz * dz) ** (-1.5))
+                    v1[1] -= dy * m2 * dt * ((dx * dx + dy * dy + dz * dz) ** (-1.5))
+                    v1[2] -= dz * m2 * dt * ((dx * dx + dy * dy + dz * dz) ** (-1.5))
+                    v2[0] += dx * m1 * dt * ((dx * dx + dy * dy + dz * dz) ** (-1.5))
+                    v2[1] += dy * m1 * dt * ((dx * dx + dy * dy + dz * dz) ** (-1.5))
+                    v2[2] += dz * m1 * dt * ((dx * dx + dy * dy + dz * dz) ** (-1.5))
+                    # mark as seen
+                    seenit.append(body1)
+            
+        for body in body_keys:
+            (r, [vx, vy, vz], m) = BODIES[body]
+            # update r's
+            r[0] += dt * vx
+            r[1] += dt * vy
+            r[2] += dt * vz
 
 # def compute_energy(m1, m2, dx, dy, dz):
     # return (m1 * m2) / ((dx * dx + dy * dy + dz * dz) ** 0.5)
@@ -149,8 +150,7 @@ def nbody(loops, reference, iterations):
 
     for _ in range(loops):
         report_energy()
-        for _ in range(iterations):
-            advance(0.01)
+        advance(0.01, iterations)
         print(report_energy())
 
 if __name__ == '__main__':
