@@ -61,13 +61,15 @@ def advance(dt, iterations, all_combinations):
             # comput deltas
             (dx, dy, dz) = (x1-x2, y1-y2, z1-z2)
             # update v's
-            factor = dt * ((dx * dx + dy * dy + dz * dz) ** (-1.5))
-            v1[0] -= dx * m2 * factor
-            v1[1] -= dy * m2 * factor
-            v1[2] -= dz * m2 * factor
-            v2[0] += dx * m1 * factor
-            v2[1] += dy * m1 * factor
-            v2[2] += dz * m1 * factor
+            mag = dt * ((dx * dx + dy * dy + dz * dz) ** (-1.5))
+            factor1 = m1 * mag
+            factor2 = m2 * mag
+            v1[0] -= dx * factor2
+            v1[1] -= dy * factor2
+            v1[2] -= dz * factor2
+            v2[0] += dx * factor1
+            v2[1] += dy * factor1
+            v2[2] += dz * factor1
             
         for body in body_keys:
             (r, [vx, vy, vz], m) = local_bodies_dict[body]
