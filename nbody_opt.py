@@ -131,10 +131,10 @@ def nbody(loops, reference, iterations):
     local_bodies_dict = BODIES
     
     # Set up global state
-    offset_momentum(BODIES[reference], local_bodies_dict)
+    offset_momentum(local_bodies_dict[reference], local_bodies_dict)
 
     # get all combination of body keys
-    all_combinations = list(itertools.combinations(BODIES.keys(), 2))
+    all_combinations = list(itertools.combinations(local_bodies_dict.keys(), 2))
     
     for _ in range(loops):
         advance(0.01, iterations, all_combinations, local_bodies_dict)
