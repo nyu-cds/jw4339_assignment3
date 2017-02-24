@@ -7,6 +7,7 @@
     Timing(shell time command): Avg(34.779, 33.778, 34.091) = 34.216s
     Speedup: R = Avg(125.419, 127.581, 127.670) / 34.216 = 3.708
 """
+
 import itertools
 
 PI = 3.14159265358979323
@@ -52,8 +53,6 @@ def advance(dt, iterations, all_combinations, local_bodies_dict):
     '''
         advance the system iterations timesteps, dt timestep each
     '''
-    local_bodies_dict = BODIES
-    body_keys = local_bodies_dict.keys()
     for _ in range(iterations):
         for (body1, body2) in all_combinations:
             ([x1, y1, z1], v1, m1) = local_bodies_dict[body1]
@@ -71,7 +70,7 @@ def advance(dt, iterations, all_combinations, local_bodies_dict):
             v2[1] += dy * factor1
             v2[2] += dz * factor1
             
-        for body in body_keys:
+        for body in local_bodies_dict:
             (r, [vx, vy, vz], m) = local_bodies_dict[body]
             # update r's
             r[0] += dt * vx
@@ -83,8 +82,6 @@ def report_energy(all_combinations, local_bodies_dict, e=0.0):
     '''
         compute the energy and return it so that it can be printed
     '''
-    local_bodies_dict = BODIES
-    body_keys = local_bodies_dict.keys()
 
     for (body1, body2) in all_combinations:
         ((x1, y1, z1), v1, m1) = local_bodies_dict[body1]
@@ -94,7 +91,7 @@ def report_energy(all_combinations, local_bodies_dict, e=0.0):
         # comput energy
         e -= (m1 * m2) / ((dx * dx + dy * dy + dz * dz) ** 0.5)
         
-    for body in body_keys:
+    for body in local_bodies_dict:
         (r, [vx, vy, vz], m) = local_bodies_dict[body]
         e += m * (vx * vx + vy * vy + vz * vz) / 2.
         
@@ -105,10 +102,7 @@ def offset_momentum(ref, local_bodies_dict, px=0.0, py=0.0, pz=0.0):
         ref is the body in the center of the system
         offset values from this reference
     '''
-    # local_bodies_dict = BODIES
-    body_keys = local_bodies_dict.keys()
-    
-    for body in body_keys:
+    for body in local_bodies_dict:
         (r, [vx, vy, vz], m) = local_bodies_dict[body]
         px -= vx * m
         py -= vy * m
