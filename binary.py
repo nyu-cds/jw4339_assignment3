@@ -1,6 +1,6 @@
 from itertools import permutations
 
-def bits(n, k):
+def zbits(n, k):
     if (n <= k):
         return {'0'*k}
         
@@ -10,6 +10,6 @@ def bits(n, k):
 
 if __name__ == '__main__':
     import binary
-    assert binary.bits(4, 3) == {'0100', '0001', '0010', '1000'}
-    assert binary.bits(4, 1) == {'0111', '1011', '1101', '1110'}
-    assert binary.bits(5, 4) == {'00001', '00100', '01000', '10000', '00010'}
+    assert binary.zbits(4, 3) == {'0100', '0001', '0010', '1000'}
+    assert binary.zbits(4, 1) == {'0111', '1011', '1101', '1110'}
+    assert binary.zbits(5, 4) == {'00001', '00100', '01000', '10000', '00010'}

@@ -86,9 +86,9 @@ def report_energy(all_combinations, local_bodies_dict, e=0.0):
     for (body1, body2) in all_combinations:
         ((x1, y1, z1), v1, m1) = local_bodies_dict[body1]
         ((x2, y2, z2), v2, m2) = local_bodies_dict[body2]
-        # comput deltas
+        # compute deltas
         (dx, dy, dz) = (x1-x2, y1-y2, z1-z2)
-        # comput energy
+        # compute energy
         e -= (m1 * m2) / ((dx * dx + dy * dy + dz * dz) ** 0.5)
         
     for body in local_bodies_dict:
