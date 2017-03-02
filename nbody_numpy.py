@@ -107,6 +107,7 @@ BODIES = {
 #             r[1] += dt * vy
 #             r[2] += dt * vz
 
+@profile
 def advance(dt, iterations, all_combinations, bodies_ndarray):
     '''
         advance the system iterations timesteps, dt timestep each
@@ -131,7 +132,7 @@ def advance(dt, iterations, all_combinations, bodies_ndarray):
             # v2[0] += dx * factor1
             # v2[1] += dy * factor1
             # v2[2] += dz * factor1
-            mag = dt * (np.linalg.norm(deltas) ** (-3))
+            mag = dt * (np.sum(deltas ** 2) ** (-1.5))
             bodies_ndarray[body_idx_1, 3:6] -= deltas * mag * bodies_ndarray[body_idx_2, -1:]
             bodies_ndarray[body_idx_2, 3:6] += deltas * mag * bodies_ndarray[body_idx_1, -1:]
             
@@ -147,7 +148,7 @@ def advance(dt, iterations, all_combinations, bodies_ndarray):
         
         # update r's
         bodies_ndarray[:, 0:3] += dt * bodies_ndarray[:, 3:6]
-            
+
 def report_energy(all_combinations, bodies_ndarray, e=0.0):
     '''
         compute the energy and return it so that it can be printed
@@ -164,7 +165,7 @@ def report_energy(all_combinations, bodies_ndarray, e=0.0):
         # compute deltas
         deltas = bodies_ndarray[body_idx_1, 0:3] - bodies_ndarray[body_idx_2, 0:3]
         # compute energy
-        e -= bodies_ndarray[body_idx_1, -1] * bodies_ndarray[body_idx_2, -1] / np.linalg.norm(deltas)
+        e -= bodies_ndarray[body_idx_1, -1] * bodies_ndarray[body_idx_2, -1] / (np.sum(deltas ** 2) ** 0.5)
     
     
     #####
@@ -175,8 +176,8 @@ def report_energy(all_combinations, bodies_ndarray, e=0.0):
     #     e += m * (vx * vx + vy * vy + vz * vz) / 2.
     
     for i in range(bodies_ndarray.shape[0]):
-        e += bodies_ndarray[i, -1] * (np.linalg.norm(bodies_ndarray[i, 3:6]) ** 2) / 2.0
-        
+        e += bodies_ndarray[i, -1] * np.sum(bodies_ndarray[i, 3:6] ** 2) / 2.0
+    
     return e
 
 # def offset_momentum(ref, local_bodies_dict, px=0.0, py=0.0, pz=0.0):
@@ -199,7 +200,7 @@ def report_energy(all_combinations, bodies_ndarray, e=0.0):
 #     v[1] = py / m
 #     v[2] = pz / m
 
-
+@profile  
 def nbody(loops, reference, iterations):
     '''
         nbody simulation
@@ -246,5 +247,6 @@ def nbody(loops, reference, iterations):
         print(report_energy(all_combinations, bodies_ndarray))
         
 if __name__ == '__main__':
-    nbody(100, 'sun', 20000)
+    # nbody(100, 'sun', 20000)
+    nbody(5, 'sun', 20000)
 
