@@ -76,83 +76,128 @@ BODIES = {
                 
                 
                 
-def advance(dt, iterations, all_combinations, local_bodies_dict):
+# def advance(dt, iterations, all_combinations, local_bodies_dict):
+#     '''
+#         advance the system iterations timesteps, dt timestep each
+#     '''
+#     for _ in range(iterations):
+#         for (body1, body2) in all_combinations:
+#             ([x1, y1, z1], v1, m1) = local_bodies_dict[body1]
+#             ([x2, y2, z2], v2, m2) = local_bodies_dict[body2]
+#             # comput deltas
+#             (dx, dy, dz) = (x1-x2, y1-y2, z1-z2)
+#             # update v's
+#             mag = dt * ((dx * dx + dy * dy + dz * dz) ** (-1.5))
+#             factor1 = m1 * mag
+#             factor2 = m2 * mag
+#             v1[0] -= dx * factor2
+#             v1[1] -= dy * factor2
+#             v1[2] -= dz * factor2
+#             v2[0] += dx * factor1
+#             v2[1] += dy * factor1
+#             v2[2] += dz * factor1
+#             
+#         #####
+#         # TODO: numpy optimization
+#         ######
+#         for body in local_bodies_dict:
+#             (r, [vx, vy, vz], m) = local_bodies_dict[body]
+#             # update r's
+#             r[0] += dt * vx
+#             r[1] += dt * vy
+#             r[2] += dt * vz
+
+def advance(dt, iterations, all_combinations, bodies_ndarray):
     '''
         advance the system iterations timesteps, dt timestep each
     '''
     for _ in range(iterations):
-        for (body1, body2) in all_combinations:
-            ([x1, y1, z1], v1, m1) = local_bodies_dict[body1]
-            ([x2, y2, z2], v2, m2) = local_bodies_dict[body2]
+        for body_idx_1, body_idx_2 in all_combinations:
+            #([x1, y1, z1], v1, m1) = local_bodies_dict[body1]
+            #([x2, y2, z2], v2, m2) = local_bodies_dict[body2]
+            
             # comput deltas
-            (dx, dy, dz) = (x1-x2, y1-y2, z1-z2)
+            # (dx, dy, dz) = (x1-x2, y1-y2, z1-z2)
+            deltas = bodies_ndarray[body_idx_1, 0:3] - bodies_ndarray[body_idx_2, 0:3]
+            
+            
             # update v's
-            mag = dt * ((dx * dx + dy * dy + dz * dz) ** (-1.5))
-            factor1 = m1 * mag
-            factor2 = m2 * mag
-            v1[0] -= dx * factor2
-            v1[1] -= dy * factor2
-            v1[2] -= dz * factor2
-            v2[0] += dx * factor1
-            v2[1] += dy * factor1
-            v2[2] += dz * factor1
+            # mag = dt * ((dx * dx + dy * dy + dz * dz) ** (-1.5))
+            # factor1 = m1 * mag
+            # factor2 = m2 * mag
+            # v1[0] -= dx * factor2
+            # v1[1] -= dy * factor2
+            # v1[2] -= dz * factor2
+            # v2[0] += dx * factor1
+            # v2[1] += dy * factor1
+            # v2[2] += dz * factor1
+            mag = dt * (np.linalg.norm(deltas) ** (-3))
+            bodies_ndarray[body_idx_1, 3:6] -= deltas * mag * bodies_ndarray[body_idx_2, -1:]
+            bodies_ndarray[body_idx_2, 3:6] += deltas * mag * bodies_ndarray[body_idx_1, -1:]
             
         #####
         # TODO: numpy optimization
         ######
-        for body in local_bodies_dict:
-            (r, [vx, vy, vz], m) = local_bodies_dict[body]
-            # update r's
-            r[0] += dt * vx
-            r[1] += dt * vy
-            r[2] += dt * vz
-
+        # for body in local_bodies_dict:
+        #     (r, [vx, vy, vz], m) = local_bodies_dict[body]
+        #     # update r's
+        #     r[0] += dt * vx
+        #     r[1] += dt * vy
+        #     r[2] += dt * vz 
+        
+        # update r's
+        bodies_ndarray[:, 0:3] += dt * bodies_ndarray[:, 3:6]
             
-def report_energy(all_combinations, local_bodies_dict, e=0.0):
+def report_energy(all_combinations, bodies_ndarray, e=0.0):
     '''
         compute the energy and return it so that it can be printed
     '''
-
-    for (body1, body2) in all_combinations:
-        ((x1, y1, z1), v1, m1) = local_bodies_dict[body1]
-        ((x2, y2, z2), v2, m2) = local_bodies_dict[body2]
+    # for (body1, body2) in all_combinations:
+    #     ((x1, y1, z1), v1, m1) = local_bodies_dict[body1]
+    #     ((x2, y2, z2), v2, m2) = local_bodies_dict[body2]
+    #     # compute deltas
+    #     (dx, dy, dz) = (x1-x2, y1-y2, z1-z2)
+    #     # compute energy
+    #     e -= (m1 * m2) / ((dx * dx + dy * dy + dz * dz) ** 0.5)
+    
+    for body_idx_1, body_idx_2 in all_combinations:
         # compute deltas
-        (dx, dy, dz) = (x1-x2, y1-y2, z1-z2)
+        deltas = bodies_ndarray[body_idx_1, 0:3] - bodies_ndarray[body_idx_2, 0:3]
         # compute energy
-        e -= (m1 * m2) / ((dx * dx + dy * dy + dz * dz) ** 0.5)
+        e -= bodies_ndarray[body_idx_1, -1] * bodies_ndarray[body_idx_2, -1] / np.linalg.norm(deltas)
+    
     
     #####
     # TODO: numpy optimization
     ######
-    for body in local_bodies_dict:
-        (r, [vx, vy, vz], m) = local_bodies_dict[body]
-        e += m * (vx * vx + vy * vy + vz * vz) / 2.
+    # for body in local_bodies_dict:
+    #     (r, [vx, vy, vz], m) = local_bodies_dict[body]
+    #     e += m * (vx * vx + vy * vy + vz * vz) / 2.
+    
+    for i in range(bodies_ndarray.shape[0]):
+        e += bodies_ndarray[i, -1] * (np.linalg.norm(bodies_ndarray[i, 3:6]) ** 2) / 2.0
         
     return e
 
-def offset_momentum(ref, local_bodies_dict, px=0.0, py=0.0, pz=0.0):
-    '''
-        ref is the body in the center of the system
-        offset values from this reference
-    '''
-    
-    #####
-    # TODO: numpy optimization
-    ######    
-    for body in local_bodies_dict:
-        (r, [vx, vy, vz], m) = local_bodies_dict[body]
-        px -= vx * m
-        py -= vy * m
-        pz -= vz * m
-        
-    (r, v, m) = ref
-    v[0] = px / m
-    v[1] = py / m
-    v[2] = pz / m
-
-    
-def init_nd_array():
-    
+# def offset_momentum(ref, local_bodies_dict, px=0.0, py=0.0, pz=0.0):
+#     '''
+#         ref is the body in the center of the system
+#         offset values from this reference
+#     '''
+#     
+#     #####
+#     # TODO: numpy optimization
+#     ######    
+#     for body in local_bodies_dict:
+#         (r, [vx, vy, vz], m) = local_bodies_dict[body]
+#         px -= vx * m
+#         py -= vy * m
+#         pz -= vz * m
+#         
+#     (r, v, m) = ref
+#     v[0] = px / m
+#     v[1] = py / m
+#     v[2] = pz / m
 
 
 def nbody(loops, reference, iterations):
@@ -186,17 +231,20 @@ def nbody(loops, reference, iterations):
     
     # Set up global state
     # offset_momentum(BODIES[reference], local_bodies_dict)
-    bodies_ndarray[0:1, 0:3] = ((bodies_ndarray[:, 3:6].T * bodies_ndarray[:, -1]).T).sum(axis=0)
-    bodies_ndarray[0:1, 0:3] /= bodies_ndarray[0:1, -1:]
+    bodies_ndarray[0, 3:6] -= ((bodies_ndarray[:, 3:6].T * bodies_ndarray[:, -1]).T).sum(axis=0)
+    bodies_ndarray[0, 3:6] /= bodies_ndarray[0, -1]
     
 
     # get all combination of body keys
-    all_combinations = list(itertools.combinations(BODIES.keys(), 2))
+    # all_combinations = list(itertools.combinations(BODIES.keys(), 2))
+    all_combinations = list(itertools.combinations(range(0, 5), 2))
     
     for _ in range(loops):
-        advance(0.01, iterations, all_combinations, local_bodies_dict)
-        print(report_energy(all_combinations, local_bodies_dict))
-
+        # advance(0.01, iterations, all_combinations, local_bodies_dict)
+        # print(report_energy(all_combinations, local_bodies_dict))
+        advance(0.01, iterations, all_combinations, bodies_ndarray)
+        print(report_energy(all_combinations, bodies_ndarray))
+        
 if __name__ == '__main__':
     nbody(100, 'sun', 20000)
 
