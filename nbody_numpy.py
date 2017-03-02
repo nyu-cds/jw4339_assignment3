@@ -7,7 +7,31 @@
     Assignment 6
 """
 
+"""
+cProfile result [Before]
+         306 function calls in 89.907 seconds
+
+   Ordered by: standard name
+
+   ncalls  tottime  percall  cumtime  percall filename:lineno(function)
+        1    0.000    0.000    0.000    0.000 nbody_iter.py:100(offset_momentum)
+        1    0.019    0.019   89.891   89.891 nbody_iter.py:117(nbody)
+      100   89.816    0.898   89.870    0.899 nbody_iter.py:52(advance)
+      100    0.002    0.000    0.002    0.000 nbody_iter.py:81(report_energy)
+        1    0.016    0.016   89.907   89.907 nbody_iter.py:9(<module>)
+        1    0.000    0.000    0.000    0.000 {method 'disable' of '_lsprof.Profiler' objects}
+        1    0.000    0.000    0.000    0.000 {method 'keys' of 'dict' objects}
+      101    0.055    0.001    0.055    0.001 {range}
+"""
+
+"""
+cProfile result [After]
+
+"""
+
+
 import itertools
+import numpy as np
 
 PI = 3.14159265358979323
 SOLAR_MASS = 4 * PI * PI
@@ -48,6 +72,10 @@ BODIES = {
                  -9.51592254519715870e-05 * DAYS_PER_YEAR],
                 5.15138902046611451e-05 * SOLAR_MASS)}
 
+
+                
+                
+                
 def advance(dt, iterations, all_combinations, local_bodies_dict):
     '''
         advance the system iterations timesteps, dt timestep each
@@ -69,6 +97,9 @@ def advance(dt, iterations, all_combinations, local_bodies_dict):
             v2[1] += dy * factor1
             v2[2] += dz * factor1
             
+        #####
+        # TODO: numpy optimization
+        ######
         for body in local_bodies_dict:
             (r, [vx, vy, vz], m) = local_bodies_dict[body]
             # update r's
@@ -89,7 +120,10 @@ def report_energy(all_combinations, local_bodies_dict, e=0.0):
         (dx, dy, dz) = (x1-x2, y1-y2, z1-z2)
         # compute energy
         e -= (m1 * m2) / ((dx * dx + dy * dy + dz * dz) ** 0.5)
-        
+    
+    #####
+    # TODO: numpy optimization
+    ######
     for body in local_bodies_dict:
         (r, [vx, vy, vz], m) = local_bodies_dict[body]
         e += m * (vx * vx + vy * vy + vz * vz) / 2.
@@ -101,6 +135,10 @@ def offset_momentum(ref, local_bodies_dict, px=0.0, py=0.0, pz=0.0):
         ref is the body in the center of the system
         offset values from this reference
     '''
+    
+    #####
+    # TODO: numpy optimization
+    ######    
     for body in local_bodies_dict:
         (r, [vx, vy, vz], m) = local_bodies_dict[body]
         px -= vx * m
@@ -112,6 +150,10 @@ def offset_momentum(ref, local_bodies_dict, px=0.0, py=0.0, pz=0.0):
     v[1] = py / m
     v[2] = pz / m
 
+    
+def init_nd_array():
+    
+
 
 def nbody(loops, reference, iterations):
     '''
@@ -120,6 +162,24 @@ def nbody(loops, reference, iterations):
         reference - body at center of system
         iterations - number of timesteps to advance
     '''
+    # init numpy ndarray
+    sun = np.array([0.0, 0.0, 0.0, 0.0, 0.0, 0.0, SOLAR_MASS])
+    jupiter = np.array([4.84143144246472090e+00, -1.16032004402742839e+00, -1.03622044471123109e-01, 
+                        1.66007664274403694e-03, 7.69901118419740425e-03, -6.90460016972063023e-05, 
+                        9.54791938424326609e-04])
+    saturn = np.array([8.34336671824457987e+00, 4.12479856412430479e+00, -4.03523417114321381e-01, 
+                       -2.76742510726862411e-03, 4.99852801234917238e-03, 2.30417297573763929e-05, 
+                       2.85885980666130812e-04])
+    uranus = np.array([1.28943695621391310e+01, -1.51111514016986312e+01, -2.23307578892655734e-01, 
+                       2.96460137564761618e-03, 2.37847173959480950e-03, -2.96589568540237556e-05, 
+                       4.36624404335156298e-05]) 
+    neptune = np.array([1.53796971148509165e+01, -2.59193146099879641e+01, 1.79258772950371181e-01, 
+                        2.68067772490389322e-03, 1.62824170038242295e-03, -9.51592254519715870e-05, 
+                        5.15138902046611451e-05])    
+    bodies_ndarray = np.vstack((sun, jupiter, saturn, uranus, neptune))
+    bodies_ndarray[1:, 3:6] *= DAYS_PER_YEAR
+    bodies_ndarray[1:, -1:] *= SOLAR_MASS
+    
     # local variable
     local_bodies_dict = BODIES
     
