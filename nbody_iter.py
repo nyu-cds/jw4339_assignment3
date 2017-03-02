@@ -1,11 +1,10 @@
 """
     N-body simulation.
     
-    Module: nbody_opt.py
+    Module: nbody_iter.py
     Author: jw4339@nyu.edu
     
-    Timing(shell time command): Avg(34.779, 33.778, 34.091) = 34.216s
-    Speedup: R = Avg(125.419, 127.581, 127.670) / 34.216 = 3.708
+    Assignment 6
 """
 
 import itertools
