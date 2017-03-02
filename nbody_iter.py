@@ -4,7 +4,7 @@
     Module: nbody_iter.py
     Author: jw4339@nyu.edu
     
-    Assignment 6
+    Assignment 5
 """
 
 import itertools
