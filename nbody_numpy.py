@@ -162,7 +162,7 @@ def nbody(loops, reference, iterations):
         reference - body at center of system
         iterations - number of timesteps to advance
     '''
-    # init numpy ndarray
+    # init bodies data using numpy ndarray
     sun = np.array([0.0, 0.0, 0.0, 0.0, 0.0, 0.0, SOLAR_MASS])
     jupiter = np.array([4.84143144246472090e+00, -1.16032004402742839e+00, -1.03622044471123109e-01, 
                         1.66007664274403694e-03, 7.69901118419740425e-03, -6.90460016972063023e-05, 
@@ -180,11 +180,15 @@ def nbody(loops, reference, iterations):
     bodies_ndarray[1:, 3:6] *= DAYS_PER_YEAR
     bodies_ndarray[1:, -1:] *= SOLAR_MASS
     
+    
     # local variable
-    local_bodies_dict = BODIES
+    # local_bodies_dict = BODIES
     
     # Set up global state
-    offset_momentum(BODIES[reference], local_bodies_dict)
+    # offset_momentum(BODIES[reference], local_bodies_dict)
+    bodies_ndarray[0:1, 0:3] = ((bodies_ndarray[:, 3:6].T * bodies_ndarray[:, -1]).T).sum(axis=0)
+    bodies_ndarray[0:1, 0:3] /= bodies_ndarray[0:1, -1:]
+    
 
     # get all combination of body keys
     all_combinations = list(itertools.combinations(BODIES.keys(), 2))
