@@ -1,6 +1,10 @@
 # jw4339_assignment3
 
-#### For Assignment 6: 
+#### For Assignment 8: 
+
+Please find in nbody_numba.py
+
+#### For Assignment 7: 
 
 Please find in nbody_cython.pyx
 
