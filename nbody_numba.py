@@ -7,7 +7,7 @@
 """
 import itertools
 import numpy as np
-from numba import jit
+from numba import jit, vectorize, float64
 
 PI = 3.14159265358979323
 SOLAR_MASS = 4 * PI * PI
@@ -50,7 +50,7 @@ BODIES = {
                  -9.51592254519715870e-05 * DAYS_PER_YEAR], dtype=np.float64),
                 5.15138902046611451e-05 * SOLAR_MASS)}
 
-@jit
+@vectorize([float64(float64, float64)])
 def vec_deltas(a, b):
     return a - b
                 
@@ -121,7 +121,8 @@ def offset_momentum(ref, local_bodies_dict, px=0.0, py=0.0, pz=0.0):
     v = np.array([px / m, py / m, pz / m])
 
 
-@jit
+@jit('void(int32, char[:], int32)')
+# nopython=True
 def nbody(loops, reference, iterations):
     '''
         nbody simulation
