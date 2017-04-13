@@ -1,9 +1,13 @@
 '''
-Advanced Python assignemtn 10:
+Advanced Python assignemtn 10, task 1:
     mpi_assignment_1.py
     
-How to run:
-    From prompt, mpiexec -n <num_of_tasks_to_invoke> python <path_to_this_script>
+Usage:
+    mpiexec -n <num_of_tasks_to_invoke> python <path_to_this_script> [a_number]
+        mpiexec                        : the command/program to invoke a MPI routine
+        -n <num_of_tasks_to_invoke>    : invoke the MPI routine with specified number of tasks
+        python                         : the python interpreter command
+        <path_to_this_script>          : path to this script
 '''
 from mpi4py import MPI
 
