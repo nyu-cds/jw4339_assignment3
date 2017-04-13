@@ -1,5 +1,13 @@
 # jw4339_assignment3
 
+
+#### For Assignemtn 10:
+
+Please find in mpi_assignment_1.py and mpi_assignment_2.py
+
+#### For Assignemnt 9:
+no assignemtn 9
+
 #### For Assignment 8: 
 
 Please find in nbody_numba.py
