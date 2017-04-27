@@ -42,12 +42,13 @@ def compute_mandel(min_x, max_x, min_y, max_y, image, iters):
     grid_tt_y = cuda.blockDim.y * cuda.gridDim.y
     
     # number of pixels assigned to each thread
-    per_x = 1 if grid_tt_x >= width else  width // grid_tt_x  # TODO: potential bug, if width is not a multiple of gird_tt_x
-    per_y = 1 if grid_tt_y >= height else height // grid_tt_y # TODO: potential bug, if width is not a multiple of gird_tt_y
+    per_x = (width + grid_tt_x - 1) // grid_tt_x  
+    per_y = (height + grid_tt_y - 1) // grid_tt_y
     
     # current thread idx on each dimension
     idx_x = cuda.threadIdx.x + cuda.blockIdx.x * cuda.blockDim.x 
     idx_y = cuda.threadIdx.y + cuda.blockIdx.y * cuda.blockDim.y
+    
     
     for offset_x in range(per_x):
         px_idx_x = idx_x * per_x + offset_x  # current pixel idx on X
@@ -63,8 +64,8 @@ if __name__ == '__main__':
     image = np.zeros((1024, 1536), dtype = np.uint8) # 1572864 pixels
     blockdim = (32, 8)  # 32 * 8 thread block,  256 threads
     griddim = (32, 16)  # 32 * 16 block grid, 512 blocks * 256 = 131072 => 12 pixel per thread
-    # 32 * 32 = 1024 in X-axis
-    # 8 * 16 = 128 in Y-axis -> each thread should take care 12 pixel on Y-axis
+    # 32 * 32 = 1024 in X-axis -> each treahd should take care at most 2 pixel on X-axis
+    # 8 * 16 = 128 in Y-axis -> each thread should take care 1024/128 = 8 pixel on Y-axis
     
     image_global_mem = cuda.to_device(image)
     compute_mandel[griddim, blockdim](-2.0, 1.0, -1.0, 1.0, image_global_mem, 20) 
