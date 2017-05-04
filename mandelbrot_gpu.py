@@ -2,7 +2,7 @@
 
 '''
 Advanced Python assignemtn 12:
-    mandelbrot.py
+    mandelbrot_gpu.py
 '''
 
 
@@ -31,13 +31,13 @@ def mandel(x, y, max_iters):
 
 @cuda.jit
 def compute_mandel(min_x, max_x, min_y, max_y, image, iters):
-	'''
+    '''
         1. get the imaege shape
         2. figure out the settings of kernel launch 
         3. get the thread indices in each dimension 
         4. calculate out how many pixels should be handled by each thread
         5. nested loop to call mandel() and assign value to each pixels
-	'''
+    '''
     # get parameters of image settings 
     height = image.shape[0]
     width = image.shape[1]
